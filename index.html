@@ -30,10 +30,10 @@
 
             .start-button {
                 position: absolute;
-                bottom: 10%;
-                left: 75%;
-                width: 400px;
-                height: 300px;
+                bottom: 0;
+                right: 0;
+                width: 25em;
+                height: 11em;
                 background-color: transparent;
                 background-image: url("start_btn.png"); /* Adds the image */
                 background-size: contain; /* Ensures the image covers the entire button */
@@ -96,8 +96,8 @@
         }
 
         .item {
-              width: 250px;
-              height: 150px;
+              width: 15.625em;
+              height: 9.375em;
               cursor: pointer;
               animation: float 1.5s infinite;
               position: relative;
@@ -224,48 +224,6 @@
             .item.animating:hover {
                 transform: none;
             }
-
-        @media (max-width: 768px) {
-            .item {
-                width: 120px;
-                height: 100px;
-                top: -40px;
-            }
-
-            .price {
-                font-size: 0.9rem;
-                margin-top: -20px;
-            }
-
-            .shelf {
-                height: 120px;
-            }
-
-            .basket {
-                height: 100px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .item {
-                width: 80px;
-                height: 70px;
-                top: -30px;
-            }
-
-            .price {
-                font-size: 0.8rem;
-                margin-top: -10px;
-            }
-
-            .shelf {
-                height: 100px;
-            }
-
-            .basket {
-                height: 80px;
-            }
-        }
 
       .change-modal {
         position: fixed;
