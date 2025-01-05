@@ -64,6 +64,16 @@
             overflow: hidden;
         }
 
+        .start-game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            overflow: hidden;
+        }
+
         .shelves {
             position: relative;
             width: 20%;
@@ -93,6 +103,7 @@
             align-items: center;
             position: relative;
             top: -90px;
+            width: 50%;
         }
 
         .item {
@@ -377,7 +388,7 @@
 </head>
 <body>
 
-  <div id="starting-screen" class="game-container">
+  <div id="starting-screen" class="start-game-container">
     <!-- Video Container -->
     <video id="entrance-video" autoplay muted loop class="full-screen-video">
       <source src="entrance_video.mp4" type="video/mp4">
@@ -397,7 +408,7 @@
 </audio>
 
 
-    <div id="game-screen" class="game-container" style="display: none;">
+    <div id="game-screen" style="display: none;">
         <div class="money" id="money">Bakiye: 500₺</div>
 
         <div class="shopping-list-container" id="shopping-list-container">
@@ -518,8 +529,11 @@
       startingScreen.style.opacity = '0'; // Fade out
       setTimeout(() => {
         startingScreen.style.display = 'none';
-        gameScreen.style.display = 'flex'; // Show game screen
-        gameScreen.style.opacity = '1'; // Fade in
+        gameScreen.removeAttribute("style");
+        gameScreen.classList.add('game-container')
+
+                // gameScreen.style.display = 'flex'; // Show game screen
+        // gameScreen.style.opacity = '1'; // Fade in
       }, 300); // Adjust delay to match CSS transition duration
     });
 
