@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <title>Interactive Shopping Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('background_img2.jpeg'); /* Image in the same directory */
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: "Josefin Sans", serif;
+          }
+
+          .full-screen-video {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              z-index: -1;
+            }
+
+            .start-button {
+                position: absolute;
+                bottom: 10%;
+                left: 75%;
+                width: 400px;
+                height: 300px;
+                background-color: transparent;
+                background-image: url("start_btn.png"); /* Adds the image */
+                background-size: contain; /* Ensures the image covers the entire button */
+                background-position: center; /* Centers the image within the button */
+                background-repeat: no-repeat; /* Prevents the image from repeating */
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-family: "Josefin Sans", serif;
+              }
+
+
+            .start-button:hover {
+              transform: scale(1.05);
+            }
+
+            .start-button:active {
+              transform: scale(0.95);
+            }
+
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .shelves {
+            position: relative;
+            width: 20%;
+            margin: 1.8em;
+            height: 80%;
+            padding-top: 1.8em;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            z-index: 1;
+        }
+
+        .shelf {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            background: url('shelf.png') no-repeat center;
+            background-size: contain;
+            height: 150px;
+            width: 100%;
+            position: relative;
+        }
+
+        .item-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            top: -90px;
+        }
+
+        .item {
+              width: 250px;
+              height: 150px;
+              cursor: pointer;
+              animation: float 1.5s infinite;
+              position: relative;
+              transition: transform 0.2s ease-in-out;
+          }
+
+        .price {
+            font-size: 1rem;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 2.5vh;
+        }
+
+        .basket {
+            position: absolute;
+            bottom: 0;
+            width: 35%;
+            height: 320px;
+            z-index: 999;
+        }
+
+        .basket-items {
+            position: absolute;
+            bottom: 90px;
+            left: 105%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; 
+            align-items: flex-end;
+            gap: 5px;
+            width: 60%;
+            height: 100%;
+            overflow: visible;
+            background-size: cover;
+            z-index: 1 !important;
+        }
+
+        .basket-image {
+            position: absolute; /* Allows precise positioning */
+            z-index: 2; /* Higher index to be above items */
+            bottom: 30%;
+            left: 60%;
+            width: 100%; /* Scale as needed */
+        }
+
+        .money{
+            position: absolute;
+            right: 0;
+            top: 0;
+            font-size: xx-large;
+        }
+
+        .shopping-list-container {
+          position: absolute;
+          top: 14%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 14%;
+          padding: 10px 50px 10px 50px;
+          background: url('paper.png');
+          background-size: cover;
+          display: none;
+        }
+
+        .shopping-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          font-size: 1.2rem;
+          text-align: center;
+          color: #333;
+        }
+
+        .shopping-list li {
+          margin-bottom: 10px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .shopping-list .tick {
+          width: 20px;
+          height: 20px;
+          background: url('tick_icon.png') no-repeat center;
+          background-size: contain;
+          display: none;
+        }
+
+        .shopping-list .completed .tick {
+          display: inline-block;
+        }
+
+          .finish-button:hover {
+              background-color: #58876e;
+              transform: scale(1.05);
+          }
+
+          .finish-button:active {
+              transform: scale(0.95);
+          }
+
+        @keyframes float {
+              0%, 100% {
+                  transform: translateY(0) scale(1);
+              }
+              50% {
+                  transform: translateY(-10px) scale(1);
+              }
+          }
+
+        .item.animating {
+                transform: none !important;
+                animation: none !important;
+                pointer-events: none;
+            }
+
+            .item:hover {
+                animation: none;
+                transform: translateY(-10px) scale(1.5);
+            }
+
+            .item.animating:hover {
+                transform: none;
+            }
+
+        @media (max-width: 768px) {
+            .item {
+                width: 120px;
+                height: 100px;
+                top: -40px;
+            }
+
+            .price {
+                font-size: 0.9rem;
+                margin-top: -20px;
+            }
+
+            .shelf {
+                height: 120px;
+            }
+
+            .basket {
+                height: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .item {
+                width: 80px;
+                height: 70px;
+                top: -30px;
+            }
+
+            .price {
+                font-size: 0.8rem;
+                margin-top: -10px;
+            }
+
+            .shelf {
+                height: 100px;
+            }
+
+            .basket {
+                height: 80px;
+            }
+        }
+
+      .change-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none; /* Hidden by default */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .restart-button {
+            padding: 10px 20px;
+            margin-top: 4.5em;
+            font-size: 1.2rem;
+            background-color: #58876e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            font-family: "Josefin Sans", serif;
+
+        }
+
+      .restart-button:hover {
+          background-color: #58876e;
+      }
+
+    .modal-content input {
+        width: 80%;
+        padding: 10px;
+        margin-top: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .modal-content button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        font-size: 1.6rem;
+        color: white;
+        background-color: #58876e;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .modal-content button:hover {
+        background-color: #58876e;
+    }
+
+    .shoppingListStarter {
+      position: absolute;
+      font-family: "Josefin Sans", serif;
+
+      bottom: 20%;
+      right: 35%;
+      padding: 15px 30px;
+      font-size: 1.6rem;
+      background-color: #58876e; /* Green color */
+      color: white;
+      border: 1px solid brown;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 12%;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+    }
+
+    .finish-button {
+              position: absolute;
+              bottom: 12%;
+              right: 35%;
+              font-family: "Josefin Sans", serif;
+
+              width: 12%;
+              padding: 15px 30px;
+              font-size: 1.6rem;
+              background-color: #58876e; /* Green color */
+              color: white;
+              border: 1px solid brown;
+              border-radius: 8px;
+              cursor: pointer;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+              transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+    }
+
+    .result-container {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        padding: 2px;
+        margin-top: 10px;
+    }
+
+    .game-end-container {
+        display: none;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        position: absolute;
+        width: 400px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .result {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 1.8rem;
+    }
+
+    .result-image {
+      height: 200px;
+      width: 200px;
+    }
+
+    .success {
+        color: green;
+        margin-bottom: 10px;
+    }
+
+    .fail {
+        color: red;
+        margin-bottom: 10px;
+
+    }
+
+    </style>
+</head>
+<body>
+
+  <div id="starting-screen" class="game-container">
+    <!-- Video Container -->
+    <video id="entrance-video" autoplay muted loop class="full-screen-video">
+      <source src="entrance_video.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+
+    <!-- Start Button -->
+    <button id="start-button" class="start-button"></button>
+  </div>
+  <audio id="background-sound" preload="auto"loop="true">
+    <source src="https://www.soundjay.com/free-music/sounds/heart-of-the-sea-01.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+<audio id="crowd-sound" preload="auto" loop="true">
+  <source src="https://www.soundjay.com/human/sounds/crowd-talking-1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+
+    <div id="game-screen" class="game-container" style="display: none;">
+        <div class="money" id="money">Bakiye: 500₺</div>
+
+        <div class="shopping-list-container" id="shopping-list-container">
+          <ul class="shopping-list" id="shopping-list"></ul>
+        </div>
+        <div class="shelves">
+          <div class="shelf">
+            <div class="item-container">
+              <img src="sugar.png" class="item" data-price="25" data-name="Şeker"  >
+              <div class="price">₺25</div>
+            </div>
+            <div class="item-container">
+              <img src="chocolate.png" class="item" data-price="30" data-name="Çikolata"  >
+              <div class="price">₺30</div>
+            </div>
+          </div>
+          <div class="shelf">
+            <div class="item-container">
+              <img src="cupcake.png" class="item" data-price="15" data-name="Kek"  >
+              <div class="price">₺15</div>
+            </div>
+            <div class="item-container">
+              <img src="cookie.png" class="item" data-price="20" data-name="Kurabiye"  >
+              <div class="price">₺20</div>
+            </div>
+          </div>
+          <div class="shelf">
+            <div class="item-container">
+              <img src="vegetables.png" class="item" data-price="30" data-name="Sebze"  >
+              <div class="price">₺30</div>
+            </div>
+            <div class="item-container">
+              <img src="yogurt.png" class="item" data-price="20" data-name="Yoğurt"  >
+              <div class="price">₺20</div>
+            </div>
+          </div>
+        </div>
+        <div class="shelves">
+            <div class="shelf">
+              <div class="item-container">
+                <img src="coke.png" class="item" data-price="10" data-name="İçecek"  >
+                <div class="price">₺10</div>
+              </div>
+              <div class="item-container">
+                <img src="cips.png" class="item" data-name="Cips" data-price="15"  >
+                <div class="price">₺15</div>
+              </div>
+            </div>
+            <div class="shelf">
+              <div class="item-container">
+                <img src="honey.png" class="item" data-price="30" data-name="Bal"  >
+                <div class="price">₺30</div>
+              </div>
+              <div class="item-container">
+                <img src="milk.png" class="item" data-price="15" data-name="Süt"  >
+                <div class="price">₺15</div>
+              </div>
+            </div>
+            <div class="shelf">
+              <div class="item-container">
+                <img src="egg.png" class="item" data-price="40" data-name="Yumurta"  >
+                <div class="price">₺40</div>
+              </div>
+              <div class="item-container">
+                <img src="recel.png" class="item" data-price="35" data-name="Çilek Reçeli"  >
+                <div class="price">₺35</div>
+              </div>
+            </div>
+          </div>
+
+        <div class="basket">
+            <img src="sepett.png" alt="Basket" class="basket-image" />
+
+            <div class="basket-items" id="basket-items"></div>
+        </div>
+
+        <button class="finish-button" id="finish-button" disabled onclick="showChangeInput()">Ödeme Yap</button>
+        <button class="shoppingListStarter" id="shoppingListStarter" onclick="showShoppingList(event)">
+          Göreve Başla
+        </button>
+        <div class="change-modal" id="change-modal">
+          <div class="modal-content">
+              <p>Lütfen para üstünü giriniz.</p>
+              <input type="number" id="change-input" placeholder="Para üstü" style="font-family: Josefin Sans serif;" />
+              <button onclick="submitChange()">Gönder</button>
+          </div>
+      </div>
+      <div class="game-end-container" id="game-end-container">
+        <img src="happy.png" alt="Game Result" class="result-image">
+        <div class="result-container" id="result-container">
+          <div class="result" id="item-result">Ürünler: <span id="item-check"> </span></div>
+          <div class="result" id="change-result">Para Üstü: <span id="change-check"> </span></div>
+          <button class="restart-button" onclick="restartGame()">Yeniden Başla</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+
+      
+        let totalPrice = 500;
+        let totalPrice2 = 0
+        const moneyDisplay = document.getElementById('money');
+        const basket = document.getElementById("basket-items");
+        const shoppingList = document.getElementById("shopping-list");
+
+        const backgroundSound = document.getElementById('background-sound');
+        const crowdSound = document.getElementById('crowd-sound');
+
+         // backgroundSound.volume = 0.5; // Adjust volume as needed
+        const startButton = document.getElementById('shoppingListStarter');
+        const startButtona = document.getElementById('start-button');
+    const startingScreen = document.getElementById('starting-screen');
+    const gameScreen = document.getElementById('game-screen');
+
+    startButtona.addEventListener('click', () => {
+  // Hide starting screen
+      startingScreen.style.opacity = '0'; // Fade out
+      setTimeout(() => {
+        startingScreen.style.display = 'none';
+        gameScreen.style.display = 'flex'; // Show game screen
+        gameScreen.style.opacity = '1'; // Fade in
+      }, 300); // Adjust delay to match CSS transition duration
+    });
+
+
+        function playBackgroundSound() {
+            // backgroundSound.volume = 0.5; // Set a reasonable volume level
+            backgroundSound.play().catch(error => {
+                console.error('Background sound failed to play:', error);
+            });
+        }
+
+        startButton.addEventListener('click', () => {
+            playBackgroundSound();
+        });
+
+
+        const items = [
+            { name: "Şeker", price: 25 },
+            { name: "Çikolata", price: 30 },
+            { name: "Kek", price: 15 },
+            { name: "Kurabiye", price: 20 },
+            { name: "Sebze", price: 30 },
+            { name: "Yoğurt", price: 20 },
+            { name: "İçecek", price: 10 },
+            { name: "Cips", price: 15 },
+            { name: "Bal", price: 30 },
+            { name: "Süt", price: 15 },
+            { name: "Yumurta", price: 40 },
+            { name: "Çilek Reçeli", price: 35}
+        ];
+
+        const selectedItems = []; // Shopping list
+
+        function generateShoppingList() {
+            const listSize = Math.floor(Math.random() * 2) + 3; 
+            while (selectedItems.length < listSize) {
+                const randomItem = items[Math.floor(Math.random() * items.length)];
+                if (!selectedItems.some(item => item.name === randomItem.name)) {
+                    randomItem.quantity = Math.floor(Math.random() * 3) + 1; // Add quantity to each item
+                    randomItem.bought = 0; // Track how many have been bought
+                    selectedItems.push(randomItem);
+                }
+            }
+            shoppingList.innerHTML = selectedItems.map(item => 
+                `<li id="${item.name}">
+                    ${item.name} x ${item.quantity} <span class="tick"></span>
+                </li>`
+            ).join('');
+        }
+
+        function updateShoppingList(itemName) {
+            const item = selectedItems.find(i => i.name === itemName);
+            if (item) {
+                item.bought += 1;
+                if (item.bought >= item.quantity) {
+                    const listItem = document.getElementById(itemName);
+                    listItem.classList.add('completed');
+                }""
+            }
+        }
+
+        generateShoppingList();
+
+        function addItemToCart(event) {
+            const itemElement = event.target.cloneNode(true);
+            itemElement.style.transform = "none";
+            itemElement.classList.add('animating');
+
+            const price = parseFloat(itemElement.dataset.price);
+            const itemName = itemElement.dataset.name;
+            const basketRect = basket.getBoundingClientRect();
+            const itemRect = itemElement.getBoundingClientRect();
+
+            const basketCenterX = basketRect.left + basketRect.width / 2;
+            const basketCenterY = basketRect.top + basketRect.height / 2;
+
+            const itemCenterX = itemRect.left + itemRect.width / 2;
+            const itemCenterY = itemRect.top + itemRect.height / 2;
+
+            const translateX = basketCenterX - itemCenterX;
+            const translateY = basketCenterY - itemCenterY;
+
+            itemElement.style.pointerEvents = "none";
+            itemElement.style.transition = "transform 1s ease";
+            itemElement.style.transform = `translate(${translateX}px, ${translateY}px) scale(0.5)`;
+
+            setTimeout(() => {
+                itemElement.style.transition = "";
+                itemElement.style.transform = "none";
+                itemElement.style.position = "absolute";
+                itemElement.style.zIndex = 1;
+                basket.appendChild(itemElement);
+                itemElement.style.left = `${Math.random() * (basket.clientWidth - itemElement.clientWidth)}px`;
+                itemElement.style.bottom = `5.2em`;
+                itemElement.classList.remove('animating');
+                totalPrice2 += price;
+                moneyDisplay.textContent = `Bakiye: ${totalPrice}₺`;
+                updateShoppingList(itemName);
+            }, 1000);
+        }
+        //
+
+        function showChangeInput() {
+            const modal = document.getElementById('change-modal');
+            backgroundSound.pause()
+            crowdSound.volume = 0.5; 
+            crowdSound.play()
+            modal.style.display = 'flex';
+        }
+        function attachAddItemToCart() {
+          const items = document.querySelectorAll('.item'); // Select all elements with the "item" class
+          items.forEach(item => {
+            item.addEventListener('click', addItemToCart); // Attach event listener
+          });
+        }
+
+        function showShoppingList(){
+
+          const shoppingList = document.getElementById('shopping-list-container');
+          shoppingList.style.display = 'flex';
+          const goreveBaslaBtn = document.getElementById('shoppingListStarter')
+          goreveBaslaBtn.style.display = 'none'
+          const finishGameBtn = document.getElementById('finish-button')
+          finishGameBtn.removeAttribute('disabled'); 
+          attachAddItemToCart()
+        }
+
+        function submitChange() {
+            const changeInput = document.getElementById('change-input');
+            const changeAmount = parseFloat(changeInput.value);
+            if (isNaN(changeAmount)) {
+                alert("Please enter a valid number for the change.");
+                return;
+            }
+            endGame(changeAmount);
+        }
+
+        function endGame(changeAmount) {
+            const modal = document.getElementById('change-modal');
+            modal.style.display = 'none';
+
+            const allItemsCorrect = selectedItems.every(item => item.bought === item.quantity);
+            const correctChange = (500 - totalPrice2).toFixed(2) === changeAmount.toFixed(2);
+            const changeInput = document.getElementById('change-input'); 
+
+            const resultImage = document.querySelector('.result-image');
+            if (allItemsCorrect && correctChange) {
+                resultImage.src = 'happy.png';
+                resultImage.alt = 'Happy Result';
+            } else {
+                resultImage.src = 'sad.png';
+                resultImage.alt = 'Sad Result';
+            }
+
+            if (changeInput) {
+        changeInput.value = '';
+    }
+            // Display the results
+            const resultContainer = document.getElementById('result-container');
+            const gameEndContainer = document.getElementById('game-end-container');
+            document.querySelectorAll('.shelves, .shopping-list-container, .basket, .finish-button').forEach(el => el.style.display = 'none');
+            resultContainer.style.display = 'flex';
+            gameEndContainer.style.display = 'flex';
+
+            // Update the item and change result
+            const itemResult = document.getElementById('item-result');
+            const changeResult = document.getElementById('change-result');
+
+            itemResult.innerHTML = `Ürünler: ${allItemsCorrect ? '<span class="success">✔</span>' : '<span class="fail">✘</span>'}`;
+            changeResult.innerHTML = `Para Üstü: ${correctChange ? '<span class="success">✔</span>' : '<span class="fail">✘</span>'}`;
+        }
+
+
+        function restartGame() {
+    // Stop and reset audio
+    crowdSound.pause();
+    crowdSound.currentTime = 0;
+
+    backgroundSound.pause();
+    backgroundSound.currentTime = 0;
+
+    // Reset the game screen but don't reload the page
+    const gameScreen = document.getElementById('game-screen');
+    const resultContainer = document.getElementById('result-container');
+    const gameEndContainer = document.getElementById('game-end-container');
+    const shoppingListContainer = document.getElementById('shopping-list-container');
+    const shoppingList = document.getElementById('shopping-list'); // Shopping list container
+    const basket = document.querySelector('.basket'); // Ensure basket element is selected
+    const basketItems = document.getElementById('basket-items');
+    const changeInput = document.getElementById('change-input'); // Change input field
+
+    // Clear basket items but ensure basket remains visible
+    basketItems.innerHTML = ''; // Clears the contents but keeps the basket visible
+    basket.style.display = 'block'; // Ensure the basket itself is visible
+
+    // Hide end game UI
+    resultContainer.style.display = 'none';
+    gameEndContainer.style.display = 'none';
+    shoppingListContainer.style.display = 'none';
+
+    // Reset the change input field
+    if (changeInput) {
+        changeInput.value = ''; // Clear any entered value
+    }
+
+    // Reset the shopping list
+    selectedItems.length = 0; // Clear the selected items array
+    shoppingList.innerHTML = ''; // Clear the shopping list container
+    generateShoppingList(); // Generate a new shopping list
+
+    // Reset other elements and bring back the game screen
+    document.querySelectorAll('.shelves, .finish-button').forEach(el => el.style.display = 'flex');
+    const shoppingListStarter = document.getElementById('shoppingListStarter');
+    shoppingListStarter.style.display = 'block';
+    const finishButton = document.getElementById('finish-button');
+    finishButton.setAttribute('disabled', 'true');
+
+    // Reset game logic as needed
+    totalPrice2 = 0;
+    selectedItems.forEach(item => {
+        item.bought = 0; // Reset bought quantities
+    });
+}
+
+
+    </script>
